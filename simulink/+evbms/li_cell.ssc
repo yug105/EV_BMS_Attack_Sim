@@ -1,0 +1,63 @@
+component li_cell
+% Li-ion cell (1RC Thevenin + lumped thermal)
+% Equivalent circuit: OCV(SoC) in series with R0 and R1||C1.
+% SoC is obtained by coulomb counting the cell current and the cell
+% temperature from a lumped heat balance. Above 100 % SoC the OCV keeps
+% rising and side reactions add heat (overcharge).
+
+  nodes
+    p = foundation.electrical.electrical; % +:left
+    n = foundation.electrical.electrical; % -:left
+  end
+
+  outputs
+    soc = {0, '1'};       % SoC:right
+    vt  = {0, 'V'};       % V:right
+    T   = {298.15, 'K'};  % T:right
+    ib  = {0, 'A'};       % I:right
+  end
+
+  parameters
+    Q       = {2.6, 'A*hr'};   % Capacity
+    R0      = {0.030, 'Ohm'};  % Ohmic resistance R0
+    R1      = {0.015, 'Ohm'};  % Polarisation resistance R1
+    C1      = {2000, 'F'};     % Polarisation capacitance C1
+    soc0    = {0.2, '1'};      % Initial SoC
+    soc_bp  = {[-0.1 0 0.05 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.95 1 1.5], '1'};  % SoC breakpoints
+    ocv_tab = {[2.8 3.0 3.35 3.45 3.55 3.62 3.68 3.74 3.82 3.90 3.98 4.07 4.12 4.20 5.20], 'V'};  % OCV at breakpoints
+    Cth     = {40, 'J/K'};     % Heat capacity
+    hA      = {0.05, 'W/K'};   % Heat transfer coefficient x area
+    Tamb    = {298.15, 'K'};   % Ambient temperature
+    k_oc    = {5, 'W/A'};      % Overcharge heat per A per unit SoC above 1
+  end
+
+  variables
+    i  = {0, 'A'};                                       % Cell current
+    v  = {0, 'V'};                                       % Terminal voltage
+    v1 = {value = {0, 'V'}, priority = priority.high};   % RC branch voltage
+    dz = {value = {0, '1'}, priority = priority.high};   % SoC change since start
+    dT = {value = {0, 'K'}, priority = priority.high};   % Temperature rise
+  end
+
+  branches
+    i : p.i -> n.i;
+  end
+
+  equations
+    let
+      z    = soc0 + dz;
+      ocv  = tablelookup(soc_bp, ocv_tab, z, interpolation = linear, extrapolation = linear);
+      q_oc = if gt(z, 1), k_oc * (z - 1) * abs(i) else {0, 'W'} end;
+    in
+      v == p.v - n.v;
+      dz.der == i / Q;
+      v1.der == i / C1 - v1 / (R1 * C1);
+      v == ocv + i * R0 + v1;
+      Cth * dT.der == i^2 * R0 + v1^2 / R1 + q_oc - hA * dT;
+      soc == z;
+      vt  == v;
+      T   == Tamb + dT;
+      ib  == i;
+    end
+  end
+end

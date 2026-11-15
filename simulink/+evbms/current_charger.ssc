@@ -1,0 +1,27 @@
+component current_charger
+% Charger power stage (ideal controlled current source)
+% Delivers the requested current iref out of the + terminal.
+
+  inputs
+    iref = {0, 'A'}; % I:left
+  end
+
+  nodes
+    p = foundation.electrical.electrical; % +:right
+    n = foundation.electrical.electrical; % -:right
+  end
+
+  variables
+    i = {0, 'A'};   % Current through the source from + to -
+    v = {0, 'V'};   % Voltage across the source
+  end
+
+  branches
+    i : p.i -> n.i;
+  end
+
+  equations
+    v == p.v - n.v;
+    i == -iref;
+  end
+end

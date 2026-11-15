@@ -1,0 +1,9 @@
+Attack,Latency_script,Latency_simulink,MaxV_script,MaxV_simulink,MaxT_script,MaxT_simulink
+No attack (baseline),NaN,NaN,4.202,4.203,31,31
+False data injection,7,7,4.354,4.353,31.7,31.7
+Sensor spoofing: frozen value,19,20,4.295,4.296,31.1,31.1
+Sensor spoofing: injected noise,2,4,4.177,4.137,31,30.9
+Man-in-the-middle replay,0,0,4.446,4.446,33.2,33.2
+Charger firmware tampering,3,3,4.246,4.25,35.5,35.5
+Jamming / denial of service,2,2,4.617,4.616,41.4,41.3
+Timestamp manipulation,2,2,4.202,4.203,31,31

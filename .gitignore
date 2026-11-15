@@ -1,0 +1,16 @@
+# MATLAB / Simulink generated files
+slprj/
+*.slxc
+*.asv
+*.autosave
+*.mexmaca64
+*.mexw64
+*.mexa64
+.DS_Store
+
+# large or machine-specific outputs (recreated by main / main_simulink)
+results/*.mat
+results_simulink/*.mat
+*log*.txt
+results_simulink/test_*.png
+!results_simulink/thresholds.mat
