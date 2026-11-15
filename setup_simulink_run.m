@@ -12,6 +12,7 @@ ATTACK  = 7;      % <- change this
 DEFENCE = true;   % <- true = our detection layer can stop charging
 
 root = fileparts(mfilename('fullpath'));
+if isempty(root), root = pwd; end   % Run Section has no file name; use current folder
 addpath(genpath(root));
 p    = bms_params();
 atks = attack_library(p);

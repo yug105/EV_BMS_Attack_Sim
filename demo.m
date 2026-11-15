@@ -8,6 +8,7 @@
 %% 1. Setup
 clear; clc; close all;
 root = fileparts(mfilename('fullpath'));
+if isempty(root), root = pwd; end   % Run Section has no file name; use current folder
 addpath(genpath(root));
 p    = bms_params();
 atks = attack_library(p);
